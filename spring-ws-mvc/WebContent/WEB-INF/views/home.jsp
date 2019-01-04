@@ -8,6 +8,9 @@
 <body>
 	<h1>Welcome Spring MVC</h1>
 	<p>Hello JavaCodeGeeks!</p>
+	
+	<P>  The time on the server is ${serverTime}. </P>
+	
 </body>
 
 </html>
