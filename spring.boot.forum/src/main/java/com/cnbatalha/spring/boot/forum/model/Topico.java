@@ -17,19 +17,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter @NoArgsConstructor
+@NoArgsConstructor
 public class Topico {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
- 	private String titulo;
- 	private String mensagem; 	
+	@Getter @Setter	private Integer id;
+	@Getter @Setter private String titulo;
+	@Getter @Setter private String mensagem;
+	
  	@Enumerated(EnumType.STRING)
- 	private StatusTopico status = StatusTopico.NAO_RESPONDIDO;
+ 	@Getter @Setter private StatusTopico status = StatusTopico.NAO_RESPONDIDO;
  	@ManyToOne
- 	private Usuario usuario;
+ 	@Getter @Setter private Usuario usuario;
  	@ManyToOne
- 	private Curso curso;
+ 	@Getter @Setter private Curso curso;
 
  	@OneToMany(mappedBy = "topico")
  	private List<Resposta> respostas = new ArrayList<Resposta>();
