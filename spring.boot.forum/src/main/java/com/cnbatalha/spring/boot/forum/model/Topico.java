@@ -1,5 +1,6 @@
 package com.cnbatalha.spring.boot.forum.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +22,11 @@ import lombok.Setter;
 public class Topico {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter @Setter	private Integer id;
+	@Getter @Setter	private Long id;
 	@Getter @Setter private String titulo;
 	@Getter @Setter private String mensagem;
+	
+	@Getter @Setter	private LocalDateTime dataCriacao = LocalDateTime.now();
 	
  	@Enumerated(EnumType.STRING)
  	@Getter @Setter private StatusTopico status = StatusTopico.NAO_RESPONDIDO;

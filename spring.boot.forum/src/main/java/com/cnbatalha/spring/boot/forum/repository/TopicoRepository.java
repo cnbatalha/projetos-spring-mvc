@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.cnbatalha.spring.boot.forum.model.Topico;
 
 @Repository
-public interface TopicoRepository extends JpaRepository<Topico, Integer> {
+public interface TopicoRepository extends JpaRepository<Topico, Long> {
 
 	List<Topico> findByTitulo(String titulo);
 	
