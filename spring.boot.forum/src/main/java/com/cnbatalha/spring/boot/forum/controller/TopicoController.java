@@ -7,6 +7,10 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -75,20 +80,17 @@ public class TopicoController {
 	} 
 
 	@GetMapping
-	public List<TopicoDto> lista(String titulo) {
+	public Page<TopicoDto> lista(@RequestParam(required = false) String titulo, @RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao) {
+		
+		Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
+		
 		if (titulo == null) {
-			List<Topico> topicos = topicoRepo.findAll();
+			Page<Topico> topicos = topicoRepo.findAll(paginacao);
 			return TopicoDto.converter(topicos);
 		} else {
-			List<Topico> topicos = topicoRepo.findByTitulo(titulo);
+			Page<Topico> topicos = topicoRepo.findByTitulo(titulo, paginacao);
 			return TopicoDto.converter(topicos);
 		}
-	}
-
-	@GetMapping(value = "all")
-	public List<TopicoDto> getTopicos() {
-		List<Topico> topicos = topicoRepo.findAll();
-		return TopicoDto.converter(topicos);
 	}
 
 	@GetMapping(value = "old" )
