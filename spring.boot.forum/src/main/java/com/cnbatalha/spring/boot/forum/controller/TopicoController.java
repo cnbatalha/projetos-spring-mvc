@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cnbatalha.spring.boot.forum.controller.form.TopicoForm;
 import com.cnbatalha.spring.boot.forum.dto.TopicoDto;
 import com.cnbatalha.spring.boot.forum.model.Topico;
 import com.cnbatalha.spring.boot.forum.repository.TopicoRepository;
@@ -18,9 +20,9 @@ public class TopicoController {
 	
 	@Autowired TopicoRepository topicoRepo;
 	
-	@PostMapping
-	public void cadastrar() {
-		
+	@PostMapping	
+	public void cadastrar(@RequestBody TopicoForm topicoForm) {
+		topicoRepo.save(topicoForm.converter());
 	}
 
 	@GetMapping
