@@ -7,10 +7,13 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +44,7 @@ public class TopicoController {
 	@Autowired CursoRepository cursoRepo;
 	
 	@DeleteMapping("/{id}")
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		Optional<Topico> topico = topicoRepo.findById(id);
 		if (topico.isPresent()) {
@@ -52,6 +56,7 @@ public class TopicoController {
 	
 	@PutMapping("/{id}")
 	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm topicoForm) {
 		Optional<Topico> topicoOp = topicoRepo.findById(id);
 		if (topicoOp.isPresent()) {
@@ -72,6 +77,8 @@ public class TopicoController {
 	}
 	
 	@PostMapping	
+	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm topicoForm, UriComponentsBuilder uriBuilder) {
 		Topico topico = topicoRepo.save(topicoForm.converter(cursoRepo));		
 		
@@ -80,7 +87,22 @@ public class TopicoController {
 	} 
 
 	@GetMapping
-	public Page<TopicoDto> lista(@RequestParam(required = false) String titulo, @RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao) {
+	@Cacheable( value = "listaDeTopicos")
+	public Page<TopicoDto> lista(@RequestParam(required = false) String titulo, @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable paginacao) {
+		
+		// Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
+		
+		if (titulo == null) {
+			Page<Topico> topicos = topicoRepo.findAll(paginacao);
+			return TopicoDto.converter(topicos);
+		} else {
+			Page<Topico> topicos = topicoRepo.findByTitulo(titulo, paginacao);
+			return TopicoDto.converter(topicos);
+		}
+	}
+
+	@GetMapping(value = "/parametros")
+	public Page<TopicoDto> listaParametros(@RequestParam(required = false) String titulo, @RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao) {
 		
 		Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
 		
